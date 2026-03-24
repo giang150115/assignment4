@@ -1,0 +1,107 @@
+#include <stdio.h>
+#include <stdlib.h>
+
+// Định nghĩa node
+struct node {
+    int data;
+    struct node* next;
+};
+
+// a) Hiển thị danh sách
+void display(struct node* head) {
+    struct node* p = head;
+    while (p != NULL) {
+        printf("%d -> ", p->data);
+        p = p->next;
+    }
+    printf("NULL\n");
+}
+
+// b) Thêm vào cuối
+struct node* addlast(struct node* head, int data) {
+    struct node* newnode = (struct node*)malloc(sizeof(struct node));
+    newnode->data = data;
+    newnode->next = NULL;
+
+    if (head == NULL) return newnode;
+
+    struct node* p = head;
+    while (p->next != NULL) {
+        p = p->next;
+    }
+    p->next = newnode;
+
+    return head;
+}
+
+// c) Tìm node
+struct node* find(struct node* head, int data) {
+    while (head != NULL) {
+        if (head->data == data)
+            return head;
+        head = head->next;
+    }
+    return NULL;
+}
+
+// d) Xóa node
+struct node* deletenode(struct node* head, struct node* p) {
+    if (head == NULL || p == NULL) return head;
+
+    // nếu xóa head
+    if (head == p) {
+        struct node* tmp = head;
+        head = head->next;
+        free(tmp);
+        return head;
+    }
+
+    struct node* prev = head;
+    while (prev->next != p) {
+        prev = prev->next;
+    }
+
+    prev->next = p->next;
+    free(p);
+
+    return head;
+}
+
+// e) Xóa toàn bộ list
+void freelist(struct node* head) {
+    struct node* tmp;
+    while (head != NULL) {
+        tmp = head;
+        head = head->next;
+        free(tmp);
+    }
+}
+
+// f) Test
+int main() {
+    struct node* head = NULL;
+
+    // thêm phần tử
+    head = addlast(head, 1);
+    head = addlast(head, 2);
+    head = addlast(head, 3);
+    head = addlast(head, 4);
+
+    printf("List: ");
+    display(head);
+
+    // tìm
+    struct node* p = find(head, 3);
+    if (p != NULL)
+        printf("Found: %d\n", p->data);
+
+    // xóa
+    head = deletenode(head, p);
+    printf("After delete 3: ");
+    display(head);
+
+    // giải phóng
+    freelist(head);
+
+    return 0;
+}
