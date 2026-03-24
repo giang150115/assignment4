@@ -1,0 +1,83 @@
+#include <stdio.h>
+#include <stdlib.h>
+
+// Định nghĩa node cây
+struct tnode {
+    int data;
+    struct tnode* left;
+    struct tnode* right;
+};
+
+// a) cấp phát node
+struct tnode* talloc(int data) {
+    struct tnode* p = (struct tnode*)malloc(sizeof(struct tnode));
+    p->data = data;
+    p->left = p->right = NULL;
+    return p;
+}
+
+// b) thêm node (BST)
+struct tnode* addnode(struct tnode* root, int data) {
+    if (root == NULL)
+        return talloc(data);
+
+    if (data < root->data)
+        root->left = addnode(root->left, data);
+    else
+        root->right = addnode(root->right, data);
+
+    return root;
+}
+
+// c) preorder
+void preorder(struct tnode* root) {
+    if (root != NULL) {
+        printf("%d ", root->data);
+        preorder(root->left);
+        preorder(root->right);
+    }
+}
+
+// d) inorder
+void inorder(struct tnode* root) {
+    if (root != NULL) {
+        inorder(root->left);
+        printf("%d ", root->data);
+        inorder(root->right);
+    }
+}
+
+// e) xóa cây (postorder)
+int deltree(struct tnode* root) {
+    if (root == NULL) return 0;
+
+    int count = 0;
+    count += deltree(root->left);
+    count += deltree(root->right);
+
+    free(root);
+    return count + 1;
+}
+
+// f) test
+int main() {
+    struct tnode* root = NULL;
+
+    int arr[] = {3, 1, 0, 2, 8, 6, 5, 9};
+    int n = sizeof(arr) / sizeof(arr[0]);
+
+    for (int i = 0; i < n; i++) {
+        root = addnode(root, arr[i]);
+    }
+
+    printf("Preorder: ");
+    preorder(root);
+
+    printf("\nInorder: ");
+    inorder(root);
+
+    int total = deltree(root);
+    printf("\nDeleted nodes: %d\n", total);
+
+    return 0;
+}
